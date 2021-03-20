@@ -28,6 +28,8 @@
   var maxVol = 100;
   var fadesecs = 10;
 
+  var volPerc = 100;
+
   function PlayPause(){
     if(pbtn.innerHTML == "Play"){
       pbtn.innerHTML = "Pause";
@@ -53,13 +55,15 @@
 
 
   function Fade(){
-    var change = (maxVol / 100) * (sldVol.value / sldVol.max) * ((10/fadesecs) / 100);
+    var change = (10/fadesecs);
 
     if(firstPlayer){
-      p1.volume = Math.min(p1.volume + change, maxVol / 100);
+      volPerc = Math.min(100, volPerc + change);
     }else{
-      p1.volume = Math.max(p1.volume - change, 0);
+      volPerc = Math.max(0, volPerc - change);
     }
+
+    p1.volume = (volPerc * maxVol) / 10000;
 
     p2.volume = 1.0 * (maxVol / 100.0) - p1.volume;
   }
