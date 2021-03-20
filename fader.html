@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Music-Fader</title>
+  </head>
+  <body>
+    <label>Volume <input type="range" min="0" max="100" value="100" id="sld_Volume" onchange="UpdateVolume(this.value)"><label id="lbl_vol">100%</label></label><br>
+    <label>Fade-Time <input type="range" min="0.1" max="10" value="10" step="0.1" onchange="UpdateFade(this.value)"><label id="lbl_fade">10 Seconds</label></label>
+<br>
+    <button type="button" id="btn_play" onclick="PlayPause()">Pause</button>
+
+    <br>
+    <input type="file" onchange="SetMusic(this)" accept=".mp3,.flac" id="inp_file">
+  </body>
+
+  <audio src="" id="aud_1" loop></audio>
+  <audio src="" id="aud_2" loop></audio>
+</html>
+
+<script>
+  var pbtn = document.getElementById("btn_play");
+  var p1 = document.getElementById("aud_1");
+  var p2 = document.getElementById("aud_2");
+  var sldVol = document.getElementById("sld_Volume");
+  var firstPlayer = false;
+  var maxVol = 100;
+  var fadesecs = 10;
+
+  function PlayPause(){
+    if(pbtn.innerHTML == "Play"){
+      pbtn.innerHTML = "Pause";
+      p1.play();
+      p2.play();
+    }else{
+      pbtn.innerHTML = "Play";
+      p1.pause();
+      p2.pause();
+    }
+
+  }
+
+  function UpdateFade(value) {
+    document.getElementById("lbl_fade").innerHTML = value + " Seconds";
+    fadesecs = value;
+  }
+
+  function UpdateVolume(value){
+    document.getElementById("lbl_vol").innerHTML = value + "%";
+    maxVol = value;
+  }
+
+
+  function Fade(){
+    var change = (maxVol / 100) * (sldVol.value / sldVol.max) * ((10/fadesecs) / 100);
+
+    if(firstPlayer){
+      p1.volume = Math.min(p1.volume + change, maxVol / 100);
+    }else{
+      p1.volume = Math.max(p1.volume - change, 0);
+    }
+
+    p2.volume = 1.0 * (maxVol / 100.0) - p1.volume;
+  }
+
+  function SetMusic(file){
+    firstPlayer = !firstPlayer;
+    if(firstPlayer){
+      p1.src = file.files[0].name;
+      if(pbtn.innerHTML == "Pause")
+        p1.play();
+    }else{
+      p2.src = file.files[0].name;
+      if(pbtn.innerHTML == "Pause")
+        p2.play();
+    }
+  }
+
+   setInterval(function() {
+     Fade();
+   }, 100);
+
+</script>
